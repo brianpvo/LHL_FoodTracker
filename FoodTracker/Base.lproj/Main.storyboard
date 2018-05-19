@@ -48,6 +48,7 @@
                                     <outlet property="nameLabel" destination="XHf-DE-MA4" id="iZY-7F-iav"/>
                                     <outlet property="photoImageView" destination="Ux5-Kf-ClX" id="sjc-Oy-YHG"/>
                                     <outlet property="ratingControl" destination="Ms2-yU-BHP" id="z9l-kB-dGG"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="ShowDetail" id="PJ4-Eb-yOS"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -118,7 +119,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="New Meal" id="cma-7g-opQ">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="eUv-Pe-cWY"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="eUv-Pe-cWY">
+                            <connections>
+                                <action selector="cancel:" destination="BYZ-38-t0r" id="aWg-8w-Ht5"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="7Hg-DF-wIj">
                             <connections>
                                 <segue destination="DlB-0s-AYc" kind="unwind" unwindAction="unwindToMealListWithSender:" id="AR4-Lu-55v"/>
@@ -176,10 +181,13 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pLL-Ek-COg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1076" y="133.5832083958021"/>
+            <point key="canvasLocation" x="1114" y="482"/>
         </scene>
     </scenes>
     <resources>
         <image name="defaultPhoto" width="320" height="320"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="PJ4-Eb-yOS"/>
+    </inferredMetricsTieBreakers>
 </document>
