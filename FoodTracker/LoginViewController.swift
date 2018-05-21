@@ -1,5 +1,5 @@
 //
-//  SignUpViewController.swift
+//  LoginViewController.swift
 //  FoodTracker
 //
 //  Created by Brian Vo on 2018-05-21.
@@ -8,11 +8,10 @@
 
 import UIKit
 
-class SignUpViewController: UIViewController {
-
-    @IBOutlet weak var usernameTextField: UITextField!
-    @IBOutlet weak var passwordTextField: UITextField!
+class LoginViewController: UIViewController {
     
+    @IBOutlet weak var usernameFieldText: UITextField!
+    @IBOutlet weak var passwordFieldText: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,19 +19,10 @@ class SignUpViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        let defaults = UserDefaults.standard
-        let hasRegistered = defaults.bool(forKey: "token_registered")
-        
-        if hasRegistered {
-            performSegue(withIdentifier: "login", sender: nil)
-        }
-    }
-    
-    @IBAction func signUp(_ sender: UIButton) {
+    @IBAction func login(_ sender: UIButton) {
         let postData = [
-            "username": usernameTextField.text ?? "",
-            "password": passwordTextField.text ?? ""
+            "username": usernameFieldText.text ?? "",
+            "password": passwordFieldText.text ?? ""
         ]
         
         guard let postJSON = try? JSONSerialization.data(withJSONObject: postData, options: []) else {
@@ -40,7 +30,7 @@ class SignUpViewController: UIViewController {
             return
         }
         
-        let url = URL(string: "https://cloud-tracker.herokuapp.com/signup")!
+        let url = URL(string: "https://cloud-tracker.herokuapp.com/login")!
         let request = NSMutableURLRequest(url: url)
         request.httpBody = postJSON
         request.httpMethod = "POST"
@@ -67,18 +57,27 @@ class SignUpViewController: UIViewController {
             guard response.statusCode == 200 else {
                 // handle error
                 print("an error occurred)")
+//                print(response.statusCode)
+//                print(json)
                 return
             }
             
-            if let json = json {
+            if let json = json, let tokenDefault = UserDefaults.standard.value(forKey: "token") as? String {
                 let token = json["token"] as! String
                 
-                UserDefaults.standard.set(token, forKey: "token")
-                UserDefaults.standard.set(true, forKey: "token_registered")
+                if token == tokenDefault {
+                    DispatchQueue.main.async {
+                        UserDefaults.standard.set(token, forKey: "login_token")
+                        self.performSegue(withIdentifier: "mealTableView", sender: nil)
+                    }
+                }
+
             }
-    
+            
         }
         // do something with the json object
         task.resume()
     }
+    
+    
 }
