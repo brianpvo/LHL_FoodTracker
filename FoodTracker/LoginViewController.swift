@@ -24,8 +24,9 @@ class LoginViewController: UIViewController {
             "username": usernameFieldText.text ?? "",
             "password": passwordFieldText.text ?? ""
         ]
+        let requestBody = ["Content-Type": "application/json"]
         
-        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "login", completion: { (json, error) -> (Void) in
+        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "login", requestBody: requestBody, completion: { (json, error) -> (Void) in
             if let json = json, let tokenDefault = UserDefaults.standard.value(forKey: "token") as? String {
                 let token = json["token"] as! String
                 

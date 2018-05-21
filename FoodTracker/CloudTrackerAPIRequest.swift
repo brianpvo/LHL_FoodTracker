@@ -10,7 +10,7 @@ import UIKit
 
 class CloudTrackerAPIRequest: NSObject {
     
-    func post(data: [String: AnyObject], endpoint: String, completion: @escaping ([String: Any]?, Error?)->(Void)) {
+    func post(data: [String: AnyObject], endpoint: String, requestBody: [String: String]?,  completion: @escaping ([String: Any]?, Error?)->(Void)) {
         guard let postJSON = try? JSONSerialization.data(withJSONObject: data, options: []) else {
             print("could not serialize json")
             return
@@ -20,7 +20,16 @@ class CloudTrackerAPIRequest: NSObject {
         let request = NSMutableURLRequest(url: url)
         request.httpBody = postJSON
         request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let requestBody = requestBody {
+            if let tokenValue = requestBody["token"] {
+                request.addValue(tokenValue, forHTTPHeaderField: "token")
+            }
+            if let contentValue = requestBody["Content-Type"] {
+                request.addValue(contentValue, forHTTPHeaderField: "Content-Type")
+            }
+        }
+        
         let task = URLSession.shared.dataTask(with: request as URLRequest) { (data: Data?, response: URLResponse?, error: Error?) in
             
             guard let data = data else {
@@ -54,5 +63,9 @@ class CloudTrackerAPIRequest: NSObject {
         // do something with the json object
         task.resume()
     }
+    
+//    func saveMeal(<#parameters#>) -> <#return type#> {
+//        <#function body#>
+//    }
 
 }

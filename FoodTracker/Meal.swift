@@ -16,13 +16,15 @@ class Meal: NSObject, NSCoding {
     var name: String
     var photo: UIImage?
     var rating: Int
+    var calories: Int
+    var mealDescription: String
     
     //MARK: Archiving Paths
     
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("meals")
     
-    init?(name: String, photo: UIImage?, rating: Int) {
+    init?(name: String, photo: UIImage?, rating: Int, calories: Int, mealDescription: String) {
         
         // Initialization should fail if there is no name or if the rating is negative.
         // The name must not be empty
@@ -39,6 +41,8 @@ class Meal: NSObject, NSCoding {
         self.name = name
         self.photo = photo
         self.rating = rating
+        self.calories = calories
+        self.mealDescription = mealDescription
         
     }
     
@@ -46,6 +50,8 @@ class Meal: NSObject, NSCoding {
         static let name = "name"
         static let photo = "photo"
         static let rating = "rating"
+        static let calories = "calories"
+        static let mealDescription = "description"
     }
     
     func encode(with aCoder: NSCoder) {
@@ -67,8 +73,15 @@ class Meal: NSObject, NSCoding {
         
         let rating = aDecoder.decodeInteger(forKey: PropertyKey.rating)
         
+        let calories = aDecoder.decodeInteger(forKey: PropertyKey.calories)
+        
+        guard let mealDescription = aDecoder.decodeObject(forKey: PropertyKey.mealDescription) as? String else {
+            os_log("Unable to decode the description for a Meal object.", log: OSLog.default, type: .debug)
+            return nil
+        }
+        
         // Must call designated initializer.
-        self.init(name: name, photo: photo, rating: rating)
+        self.init(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription)
         
     }
     

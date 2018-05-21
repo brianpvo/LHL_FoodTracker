@@ -34,7 +34,9 @@ class SignUpViewController: UIViewController {
             "password": passwordTextField.text ?? ""
         ]
         
-        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "signup", completion: { (json, error) -> (Void) in
+        let requestBody = ["Content-Type": "application/json"]
+        
+        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "signup", requestBody: requestBody, completion: { (json, error) -> (Void) in
             if let json = json {
                 let token = json["token"] as! String
                 
