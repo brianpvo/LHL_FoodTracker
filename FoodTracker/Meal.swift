@@ -18,6 +18,8 @@ class Meal: NSObject, NSCoding {
     var rating: Int
     var calories: Int
     var mealDescription: String
+    var id: Int?
+    var userId: Int?
     
     //MARK: Archiving Paths
     

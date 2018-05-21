@@ -16,16 +16,18 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     @IBOutlet weak var descriptionTextField: UITextField!
     @IBOutlet weak var caloriesTextField: UITextField!
     @IBOutlet weak var ratingControl: RatingControl!
-    
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    
     /*
      This value is either passed by `MealTableViewController` in `prepare(for:sender:)`
      or constructed as part of adding a new meal.
      */
     var meal: Meal?
+    var cloudTracker: CloudTrackerAPIRequest?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        cloudTracker = CloudTrackerAPIRequest()
         nameTextField.delegate = self
         // Set up views if editing an existing Meal.
         if let meal = meal {
@@ -110,11 +112,36 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         let name = nameTextField.text ?? ""
         let photo = photoImageView.image
         let rating = ratingControl.rating
-        let calories = Int(caloriesTextField.text ?? "0")
+        let calories = Int(caloriesTextField.text ?? "0")!
         let mealDescription = descriptionTextField.text ?? ""
         
         // Set the meal to be passed to MealTableViewController after the unwind segue.
-        meal = Meal(name: name, photo: photo, rating: rating, calories: calories!, mealDescription: mealDescription)
+        meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription)
+        
+        // POST request to save meal
+        let postData: [String: Any] = [
+            "title": name,
+            "description": mealDescription,
+            "calories": calories
+        ]
+        
+        let token = UserDefaults.standard.value(forKey: "login_token") as! String
+        
+        let requestBody = ["token": token,
+                           "Content-Type": "application/json"]
+        
+        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "users/me/meals", requestBody: requestBody, completion: { (json, error) -> (Void) in
+            if let json = json!["meal"] as? [String: Any] {
+                let id = json["id"] as! Int
+                let userId = json["user_id"] as! Int
+                self.meal?.id = id
+                self.meal?.userId = userId
+                
+                self.cloudTracker?.post(data: ["rating": rating as AnyObject], endpoint: "users/me/meals/\(id)/rate", requestBody: requestBody, completion: { (json, error) -> (Void) in
+                    
+                })
+            }
+        })
     }
     
     override func didReceiveMemoryWarning() {
