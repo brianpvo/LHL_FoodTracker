@@ -12,12 +12,11 @@ class SignUpViewController: UIViewController {
 
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
-    
+    var cloudTracker: CloudTrackerAPIRequest?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        cloudTracker = CloudTrackerAPIRequest()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -35,50 +34,13 @@ class SignUpViewController: UIViewController {
             "password": passwordTextField.text ?? ""
         ]
         
-        guard let postJSON = try? JSONSerialization.data(withJSONObject: postData, options: []) else {
-            print("could not serialize json")
-            return
-        }
-        
-        let url = URL(string: "https://cloud-tracker.herokuapp.com/signup")!
-        let request = NSMutableURLRequest(url: url)
-        request.httpBody = postJSON
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let task = URLSession.shared.dataTask(with: request as URLRequest) { (data: Data?, response: URLResponse?, error: Error?) in
-            
-            guard let data = data else {
-                print("no data returned from server \(String(describing: error?.localizedDescription))")
-                return
-            }
-            
-            var json: [String: Any]?
-            do {
-                json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            } catch {
-                print("json fail")
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                print("no response returned from server \(String(describing: error))")
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                // handle error
-                print("an error occurred)")
-                return
-            }
-            
+        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "signup", completion: { (json, error) -> (Void) in
             if let json = json {
                 let token = json["token"] as! String
                 
                 UserDefaults.standard.set(token, forKey: "token")
                 UserDefaults.standard.set(true, forKey: "token_registered")
             }
-    
-        }
-        // do something with the json object
-        task.resume()
+        })
     }
 }
