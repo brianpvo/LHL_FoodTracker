@@ -60,14 +60,14 @@
                     <navigationItem key="navigationItem" title="Your Meals" id="HGa-jA-pdR">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="1vM-ES-rak">
                             <connections>
-                                <segue destination="5iQ-Sb-kdC" kind="presentation" identifier="AddItem" id="fh9-wN-ob0"/>
+                                <segue destination="BYZ-38-t0r" kind="show" identifier="AddItem" id="gbC-IH-a6t"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GKQ-j6-okp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="268" y="133.5832083958021"/>
+            <point key="canvasLocation" x="710" y="134"/>
         </scene>
         <!--New Meal-->
         <scene sceneID="tne-QT-ifu">
@@ -144,7 +144,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="7Hg-DF-wIj">
                             <connections>
-                                <segue destination="DlB-0s-AYc" kind="unwind" unwindAction="unwindToMealListWithSender:" id="AR4-Lu-55v"/>
+                                <segue destination="DlB-0s-AYc" kind="unwind" identifier="unwindToMealListWithSender:" unwindAction="unwindToMealListWithSender:" id="AR4-Lu-55v"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -343,29 +343,11 @@
             </objects>
             <point key="canvasLocation" x="-814" y="-645"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="1pY-76-Me0">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="5iQ-Sb-kdC" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="AlL-q0-eDA">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="hdy-vg-EQW"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pLL-Ek-COg" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1114" y="482"/>
-        </scene>
     </scenes>
     <resources>
         <image name="defaultPhoto" width="320" height="320"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="PJ4-Eb-yOS"/>
+        <segue reference="gbC-IH-a6t"/>
     </inferredMetricsTieBreakers>
 </document>

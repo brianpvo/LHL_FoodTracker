@@ -9,6 +9,10 @@
 import UIKit
 import os.log
 
+protocol AddMealProtocol {
+    func addMeal(meal: Meal);
+}
+
 class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var photoImageView: UIImageView!
@@ -17,6 +21,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
     @IBOutlet weak var caloriesTextField: UITextField!
     @IBOutlet weak var ratingControl: RatingControl!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    var delegate: AddMealProtocol?
     
     /*
      This value is either passed by `MealTableViewController` in `prepare(for:sender:)`
@@ -101,6 +106,15 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         }
     }
     
+//    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+//
+//        if identifier == "unwindToMealListWithSender:" {
+//            return (/* is saved? */) ? true : false
+//        }
+//
+//        return true
+//    }
+    
     // This method lets you configure a view controller before it's presented.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
@@ -116,7 +130,7 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         let mealDescription = descriptionTextField.text ?? ""
         
         // Set the meal to be passed to MealTableViewController after the unwind segue.
-        meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription)
+//        meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription, id: 0, userId: 0)
         
         // POST request to save meal
         let postData: [String: Any] = [
@@ -134,11 +148,15 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
             if let json = json!["meal"] as? [String: Any] {
                 let id = json["id"] as! Int
                 let userId = json["user_id"] as! Int
-                self.meal?.id = id
-                self.meal?.userId = userId
                 
+//                DispatchQueue.main.async {
+//                    // Set the meal to be passed to MealTableViewController after the unwind segue.
+//                    self.meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription, id: id, userId: userId)
+//                }
+//
                 self.cloudTracker?.post(data: ["rating": rating as AnyObject], endpoint: "users/me/meals/\(id)/rate", requestBody: requestBody, completion: { (json, error) -> (Void) in
-                    
+                    self.meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription, id: id, userId: userId)
+                    self.delegate?.addMeal(meal: self.meal!)
                 })
             }
         })

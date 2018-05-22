@@ -18,15 +18,15 @@ class Meal: NSObject, NSCoding {
     var rating: Int
     var calories: Int
     var mealDescription: String
-    var id: Int?
-    var userId: Int?
+    var id: Int
+    var userId: Int
     
     //MARK: Archiving Paths
     
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("meals")
     
-    init?(name: String, photo: UIImage?, rating: Int, calories: Int, mealDescription: String) {
+    init?(name: String, photo: UIImage?, rating: Int, calories: Int, mealDescription: String, id: Int, userId: Int) {
         
         // Initialization should fail if there is no name or if the rating is negative.
         // The name must not be empty
@@ -45,6 +45,8 @@ class Meal: NSObject, NSCoding {
         self.rating = rating
         self.calories = calories
         self.mealDescription = mealDescription
+        self.id = id
+        self.userId = userId
         
     }
     
@@ -54,12 +56,18 @@ class Meal: NSObject, NSCoding {
         static let rating = "rating"
         static let calories = "calories"
         static let mealDescription = "description"
+        static let id = "id"
+        static let userId = "userId"
     }
     
     func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: PropertyKey.name)
         aCoder.encode(photo, forKey: PropertyKey.photo)
         aCoder.encode(rating, forKey: PropertyKey.rating)
+        aCoder.encode(calories, forKey: PropertyKey.calories)
+        aCoder.encode(mealDescription, forKey: PropertyKey.mealDescription)
+        aCoder.encode(id, forKey: PropertyKey.id)
+        aCoder.encode(userId, forKey: PropertyKey.userId)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
@@ -72,18 +80,17 @@ class Meal: NSObject, NSCoding {
         
         // Because photo is an optional property of Meal, just use conditional cast.
         let photo = aDecoder.decodeObject(forKey: PropertyKey.photo) as? UIImage
-        
         let rating = aDecoder.decodeInteger(forKey: PropertyKey.rating)
-        
         let calories = aDecoder.decodeInteger(forKey: PropertyKey.calories)
-        
         guard let mealDescription = aDecoder.decodeObject(forKey: PropertyKey.mealDescription) as? String else {
             os_log("Unable to decode the description for a Meal object.", log: OSLog.default, type: .debug)
             return nil
         }
+        let id = aDecoder.decodeInteger(forKey: "id")
+        let userId = aDecoder.decodeInteger(forKey: "userId")
         
         // Must call designated initializer.
-        self.init(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription)
+        self.init(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription, id: id, userId: userId)
         
     }
     

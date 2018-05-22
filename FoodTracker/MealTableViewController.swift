@@ -9,14 +9,16 @@
 import UIKit
 import os.log
 
-class MealTableViewController: UITableViewController {
+class MealTableViewController: UITableViewController, AddMealProtocol {
 
     //MARK: Properties
     
     var meals = [Meal]()
+    var cloudTracker: CloudTrackerAPIRequest?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        cloudTracker = CloudTrackerAPIRequest()
         
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem
@@ -24,10 +26,29 @@ class MealTableViewController: UITableViewController {
         if let savedMeals = loadMeals() {
             meals += savedMeals
         }
-        else {
+        //else {
             // Load the sample data.
-            loadSampleMeals()
-        }
+         //   loadSampleMeals()
+        //}
+        let token = UserDefaults.standard.value(forKey: "login_token") as! String
+        cloudTracker?.get(endpoint: "users/me/meals", token: token, completion: { (json, error) -> (Void) in
+            if let mealArray = json {
+                for meal in mealArray {
+                    let mealObj = Meal(name: meal["title"] as! String,
+                                       photo: nil,
+                                       rating: meal["rating"] as! Int,
+                                       calories: meal["calories"] as! Int,
+                                       mealDescription: meal["description"] as! String,
+                                       id: meal["id"] as! Int,
+                                       userId: meal["user_id"] as! Int)
+                    
+                    self.meals.append(mealObj!)
+                }
+            }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        })
     }
 
     // MARK: - Table view data source
@@ -41,7 +62,8 @@ class MealTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return meals.count
     }
-    
+
+    /*
     private func loadSampleMeals() {
         let photo1 = UIImage(named: "meal1")
         let photo2 = UIImage(named: "meal2")
@@ -59,6 +81,7 @@ class MealTableViewController: UITableViewController {
         }
         meals += [meal1, meal2, meal3]
     }
+    */
     
     private func saveMeals() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(meals, toFile: Meal.ArchiveURL.path)
@@ -155,6 +178,10 @@ class MealTableViewController: UITableViewController {
         switch(segue.identifier ?? "") {
             
         case "AddItem":
+            guard let mealDetailViewController = segue.destination as? MealViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            mealDetailViewController.delegate = self
             os_log("Adding a new meal.", log: OSLog.default, type: .debug)
             
         case "ShowDetail":
@@ -176,6 +203,11 @@ class MealTableViewController: UITableViewController {
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
         }
+    }
+    
+    func addMeal(meal: Meal) {
+        meals.append(meal)
+        self.tableView.reloadData()
     }
     
 
