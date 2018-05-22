@@ -17,6 +17,10 @@
 		7A986E0D20AF8F7300103CE4 /* FoodTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E0C20AF8F7300103CE4 /* FoodTrackerTests.swift */; };
 		7A986E1520AF929200103CE4 /* MealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E1420AF929200103CE4 /* MealTableViewCell.swift */; };
 		7A986E1720AF9F3200103CE4 /* MealTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E1620AF9F3200103CE4 /* MealTableViewController.swift */; };
+		7A986E1D20B34AAF00103CE4 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E1C20B34AAF00103CE4 /* SignUpViewController.swift */; };
+		7A986E1F20B3600E00103CE4 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E1E20B3600E00103CE4 /* LoginViewController.swift */; };
+		7A986E2120B3672000103CE4 /* CloudTrackerAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E2020B3672000103CE4 /* CloudTrackerAPIRequest.swift */; };
+		7A986E2320B3B7C800103CE4 /* ImgurAPIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A986E2220B3B7C800103CE4 /* ImgurAPIRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +48,10 @@
 		7A986E0E20AF8F7300103CE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A986E1420AF929200103CE4 /* MealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTableViewCell.swift; sourceTree = "<group>"; };
 		7A986E1620AF9F3200103CE4 /* MealTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTableViewController.swift; sourceTree = "<group>"; };
+		7A986E1C20B34AAF00103CE4 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		7A986E1E20B3600E00103CE4 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		7A986E2020B3672000103CE4 /* CloudTrackerAPIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudTrackerAPIRequest.swift; sourceTree = "<group>"; };
+		7A986E2220B3B7C800103CE4 /* ImgurAPIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImgurAPIRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +99,10 @@
 				7A986E0420AF8E9100103CE4 /* Meal.swift */,
 				7A986E1420AF929200103CE4 /* MealTableViewCell.swift */,
 				7A986E1620AF9F3200103CE4 /* MealTableViewController.swift */,
+				7A986E1C20B34AAF00103CE4 /* SignUpViewController.swift */,
+				7A986E1E20B3600E00103CE4 /* LoginViewController.swift */,
+				7A986E2020B3672000103CE4 /* CloudTrackerAPIRequest.swift */,
+				7A986E2220B3B7C800103CE4 /* ImgurAPIRequest.swift */,
 				7A986DF420AF71AB00103CE4 /* Main.storyboard */,
 				7A986DF720AF71AC00103CE4 /* Assets.xcassets */,
 				7A986DF920AF71AC00103CE4 /* LaunchScreen.storyboard */,
@@ -210,8 +222,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A986E0520AF8E9100103CE4 /* Meal.swift in Sources */,
+				7A986E2120B3672000103CE4 /* CloudTrackerAPIRequest.swift in Sources */,
+				7A986E1D20B34AAF00103CE4 /* SignUpViewController.swift in Sources */,
+				7A986E2320B3B7C800103CE4 /* ImgurAPIRequest.swift in Sources */,
 				7A986DF320AF71AB00103CE4 /* MealViewController.swift in Sources */,
 				7A986E0320AF829A00103CE4 /* RatingControl.swift in Sources */,
+				7A986E1F20B3600E00103CE4 /* LoginViewController.swift in Sources */,
 				7A986DF120AF71AB00103CE4 /* AppDelegate.swift in Sources */,
 				7A986E1720AF9F3200103CE4 /* MealTableViewController.swift in Sources */,
 				7A986E1520AF929200103CE4 /* MealTableViewCell.swift in Sources */,

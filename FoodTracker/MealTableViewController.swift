@@ -9,14 +9,18 @@
 import UIKit
 import os.log
 
-class MealTableViewController: UITableViewController {
+class MealTableViewController: UITableViewController, AddMealProtocol {
 
     //MARK: Properties
     
     var meals = [Meal]()
+    var cloudTracker: CloudTrackerAPIRequest?
+    var imgurRequest: ImgurAPIRequest?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        cloudTracker = CloudTrackerAPIRequest()
+        imgurRequest = ImgurAPIRequest()
         
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem
@@ -24,15 +28,30 @@ class MealTableViewController: UITableViewController {
         if let savedMeals = loadMeals() {
             meals += savedMeals
         }
-        else {
+        //else {
             // Load the sample data.
-            loadSampleMeals()
-        }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+         //   loadSampleMeals()
+        //}
+        let token = UserDefaults.standard.value(forKey: "login_token") as! String
+        cloudTracker?.get(endpoint: "users/me/meals", token: token, completion: { (json, error) -> (Void) in
+            if let mealArray = json {
+                for meal in mealArray {
+                    let mealObj = Meal(name: meal["title"] as! String,
+                                       photo: nil,
+                                       rating: meal["rating"] as! Int,
+                                       calories: meal["calories"] as! Int,
+                                       mealDescription: meal["description"] as! String,
+                                       id: meal["id"] as! Int,
+                                       userId: meal["user_id"] as! Int)
+                    mealObj?.photoURL = meal["imagePath"] as? String
+                    
+                    self.meals.append(mealObj!)
+                }
+            }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        })
     }
 
     // MARK: - Table view data source
@@ -46,24 +65,26 @@ class MealTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return meals.count
     }
-    
+
+    /*
     private func loadSampleMeals() {
         let photo1 = UIImage(named: "meal1")
         let photo2 = UIImage(named: "meal2")
         let photo3 = UIImage(named: "meal3")
-        guard let meal1 = Meal(name: "Caprese Salad", photo: photo1, rating: 4) else {
+        guard let meal1 = Meal(name: "Caprese Salad", photo: photo1, rating: 4, calories: 50, mealDescription: "Greeny Salad") else {
             fatalError("Unable to instantiate meal1")
         }
         
-        guard let meal2 = Meal(name: "Chicken and Potatoes", photo: photo2, rating: 5) else {
+        guard let meal2 = Meal(name: "Chicken and Potatoes", photo: photo2, rating: 5, calories: 200, mealDescription: "Protein and carbs") else {
             fatalError("Unable to instantiate meal2")
         }
         
-        guard let meal3 = Meal(name: "Pasta with Meatballs", photo: photo3, rating: 3) else {
+        guard let meal3 = Meal(name: "Pasta with Meatballs", photo: photo3, rating: 3, calories: 300, mealDescription: "Protein and carbs") else {
             fatalError("Unable to instantiate meal3")
         }
         meals += [meal1, meal2, meal3]
     }
+    */
     
     private func saveMeals() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(meals, toFile: Meal.ArchiveURL.path)
@@ -86,8 +107,17 @@ class MealTableViewController: UITableViewController {
 
         let meal = meals[indexPath.row]
         cell.nameLabel.text = meal.name
-        cell.photoImageView.image = meal.photo
         cell.ratingControl.rating = meal.rating
+        
+        if let photoURL = meal.photoURL {
+            imgurRequest?.getImage(url: photoURL, completion: { (data, error) -> (Void) in
+                DispatchQueue.main.async {
+                    meal.photo = UIImage(data: data!)
+                    cell.photoImageView.image = meal.photo
+                }
+               
+            })
+        }
 
         return cell
     }
@@ -160,6 +190,10 @@ class MealTableViewController: UITableViewController {
         switch(segue.identifier ?? "") {
             
         case "AddItem":
+            guard let mealDetailViewController = segue.destination as? MealViewController else {
+                fatalError("Unexpected destination: \(segue.destination)")
+            }
+            mealDetailViewController.delegate = self
             os_log("Adding a new meal.", log: OSLog.default, type: .debug)
             
         case "ShowDetail":
@@ -181,6 +215,11 @@ class MealTableViewController: UITableViewController {
         default:
             fatalError("Unexpected Segue Identifier; \(segue.identifier)")
         }
+    }
+    
+    func addMeal(meal: Meal) {
+        meals.append(meal)
+        self.tableView.reloadData()
     }
     
 

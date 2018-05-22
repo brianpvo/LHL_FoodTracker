@@ -9,27 +9,42 @@
 import UIKit
 import os.log
 
+protocol AddMealProtocol {
+    func addMeal(meal: Meal);
+}
+
 class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var descriptionTextField: UITextField!
+    @IBOutlet weak var caloriesTextField: UITextField!
     @IBOutlet weak var ratingControl: RatingControl!
-    
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    
     /*
      This value is either passed by `MealTableViewController` in `prepare(for:sender:)`
      or constructed as part of adding a new meal.
      */
     var meal: Meal?
+    var cloudTracker: CloudTrackerAPIRequest?
+    var imgurRequest: ImgurAPIRequest?
+    var delegate: AddMealProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        cloudTracker = CloudTrackerAPIRequest()
+        imgurRequest = ImgurAPIRequest()
         nameTextField.delegate = self
         // Set up views if editing an existing Meal.
         if let meal = meal {
             navigationItem.title = meal.name
             nameTextField.text   = meal.name
-            photoImageView.image = meal.photo
+            if let photoURL = meal.photoURL {
+                imgurRequest?.getImage(url: photoURL, completion: { (data, error) -> (Void) in
+                    self.photoImageView.image = UIImage(data: data!)
+                })
+            }
             ratingControl.rating = meal.rating
         }
         updateSaveButtonState()
@@ -108,13 +123,50 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         let name = nameTextField.text ?? ""
         let photo = photoImageView.image
         let rating = ratingControl.rating
-        // Set the meal to be passed to MealTableViewController after the unwind segue.
-        meal = Meal(name: name, photo: photo, rating: rating)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        let calories = Int(caloriesTextField.text ?? "0")!
+        let mealDescription = descriptionTextField.text ?? ""
+        
+        
+        // POST request to save meal
+        let postData: [String: Any] = [
+            "title": name,
+            "description": mealDescription,
+            "calories": calories
+        ]
+        
+        let token = UserDefaults.standard.value(forKey: "login_token") as! String
+        
+        let requestBody = ["token": token,
+                           "Content-Type": "application/json"]
+        
+        // POST TO CREATE MEAL
+        cloudTracker?.post(data: postData as [String : AnyObject], endpoint: "users/me/meals", requestBody: requestBody, completion: { (json, error) -> (Void) in
+            if let json = json!["meal"] as? [String: Any] {
+                let id = json["id"] as! Int
+                let userId = json["user_id"] as! Int
+                
+                // SECOND POST FOR RATING
+                self.cloudTracker?.post(data: ["rating": rating as AnyObject], endpoint: "users/me/meals/\(id)/rate", requestBody: requestBody, completion: { (json, error) -> (Void) in
+                    
+                    self.meal = Meal(name: name, photo: photo, rating: rating, calories: calories, mealDescription: mealDescription, id: id, userId: userId)
+                    self.delegate?.addMeal(meal: self.meal!)
+                    
+                    // POST to Imgure API
+                    let imgData = UIImageJPEGRepresentation(photo!, 1.0)
+                    self.imgurRequest?.post(data: imgData, completion: { (json, error) -> (Void) in
+                        if let json = json {
+                            //print(json)
+                            let imgurData = json["data"] as! [String: Any]
+                            let link = imgurData["link"] as! String
+                            
+                            // POST to CloudTracker for PHOTO
+                            self.cloudTracker?.post(data: ["photo": link as AnyObject], endpoint: "users/me/meals/\(id)/photo", requestBody: requestBody, completion: { (json, error) -> (Void) in })
+                        }
+                    })
+                
+                })
+            }
+        })
     }
 
 
