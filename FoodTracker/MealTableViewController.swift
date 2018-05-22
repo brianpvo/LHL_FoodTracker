@@ -15,10 +15,12 @@ class MealTableViewController: UITableViewController, AddMealProtocol {
     
     var meals = [Meal]()
     var cloudTracker: CloudTrackerAPIRequest?
+    var imgurRequest: ImgurAPIRequest?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         cloudTracker = CloudTrackerAPIRequest()
+        imgurRequest = ImgurAPIRequest()
         
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem
@@ -41,6 +43,7 @@ class MealTableViewController: UITableViewController, AddMealProtocol {
                                        mealDescription: meal["description"] as! String,
                                        id: meal["id"] as! Int,
                                        userId: meal["user_id"] as! Int)
+                    mealObj?.photoURL = meal["imagePath"] as? String
                     
                     self.meals.append(mealObj!)
                 }
@@ -104,8 +107,17 @@ class MealTableViewController: UITableViewController, AddMealProtocol {
 
         let meal = meals[indexPath.row]
         cell.nameLabel.text = meal.name
-        cell.photoImageView.image = meal.photo
         cell.ratingControl.rating = meal.rating
+        
+        if let photoURL = meal.photoURL {
+            imgurRequest?.getImage(url: photoURL, completion: { (data, error) -> (Void) in
+                DispatchQueue.main.async {
+                    meal.photo = UIImage(data: data!)
+                    cell.photoImageView.image = meal.photo
+                }
+               
+            })
+        }
 
         return cell
     }

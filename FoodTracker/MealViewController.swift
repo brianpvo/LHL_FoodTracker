@@ -40,7 +40,11 @@ class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerCo
         if let meal = meal {
             navigationItem.title = meal.name
             nameTextField.text   = meal.name
-            photoImageView.image = meal.photo
+            if let photoURL = meal.photoURL {
+                imgurRequest?.getImage(url: photoURL, completion: { (data, error) -> (Void) in
+                    self.photoImageView.image = UIImage(data: data!)
+                })
+            }
             ratingControl.rating = meal.rating
         }
         updateSaveButtonState()

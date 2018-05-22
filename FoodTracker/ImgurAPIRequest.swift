@@ -52,5 +52,19 @@ class ImgurAPIRequest: NSObject {
         // do something with the json object
         task.resume()
     }
+    
+    func getImage(url: String, completion: @escaping (Data?, Error?)->(Void)) {
+        let url = URL(string: url)
+        let request = URLRequest(url: url!)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if error != nil {
+                print("error")
+            }
+            else {
+                completion(data, error)
+            }
+        }
+        task.resume()
+    }
 
 }

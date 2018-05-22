@@ -20,6 +20,7 @@ class Meal: NSObject, NSCoding {
     var mealDescription: String
     var id: Int
     var userId: Int
+    var photoURL: String?
     
     //MARK: Archiving Paths
     
